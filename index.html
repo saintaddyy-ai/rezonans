@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Проходка на тусовку</title>
+<style>
+:root{--bg:#fff3ea;--card:#ffffffd9;--text:#1d1530;--muted:#6b6280;--accent:#e6007e;--accent2:#7a3cff;--line:#eadfd6;--hot:#ff5a1f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0719;--card:#1a1030d9;--text:#f6efff;--muted:#a99cc4;--line:#33264f;--accent:#ff3da6;--accent2:#9b6bff;--hot:#ff7a45;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d0719;--card:#1a1030d9;--text:#f6efff;--muted:#a99cc4;--line:#33264f;--accent:#ff3da6;--accent2:#9b6bff;--hot:#ff7a45;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.45;overflow-x:hidden}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 48px;position:relative}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:44px 22px 40px;color:#fff;text-align:center;
+background:linear-gradient(120deg,#5b1fff,#e6007e,#ff5a1f,#7a3cff);background-size:300% 300%;animation:flow 9s ease infinite;
+box-shadow:0 20px 60px -20px var(--accent)}
+.blob{position:absolute;border-radius:50%;filter:blur(30px);opacity:.55;mix-blend-mode:screen;animation:float 7s ease-in-out infinite}
+.b1{width:160px;height:160px;background:#ffd34d;left:-40px;top:-30px}
+.b2{width:200px;height:200px;background:#00e5ff;right:-60px;bottom:-60px;animation-delay:-2s}
+.b3{width:120px;height:120px;background:#ff3da6;right:20%;top:-40px;animation-delay:-4s}
+.hero>*:not(.blob){position:relative;z-index:2}
+.kicker{display:inline-block;font-size:12px;letter-spacing:.25em;text-transform:uppercase;padding:6px 14px;border:1px solid #fff9;border-radius:99px;backdrop-filter:blur(6px);animation:up .8s both}
+.hero h1{margin:16px 0 8px;font-size:clamp(34px,10vw,48px);line-height:1.02;font-weight:900;letter-spacing:-.02em;animation:up .9s .15s both;
+text-shadow:0 0 24px #ffffff66}
+.hero h1 span{display:inline-block;animation:wave 3s ease-in-out infinite}
+.hero p{margin:4px 0;font-size:17px;opacity:.95;animation:up .9s .35s both}
+.hero p+p{animation-delay:.5s}
+.disco{font-size:44px;display:inline-block;animation:spin 6s linear infinite,up .8s both}
+
+/* TICKER */
+.ticker{margin:16px -16px 0;overflow:hidden;background:linear-gradient(90deg,var(--accent2),var(--accent));color:#fff;transform:rotate(-1.5deg);padding:9px 0;white-space:nowrap}
+.ticker div{display:inline-block;animation:marq 18s linear infinite;font-weight:800;letter-spacing:.08em;font-size:14px}
+
+/* CARDS */
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:16px}
+.rv{opacity:0;transform:translateY(28px) scale(.97);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+.price{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.price b{font-size:30px;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font-size:13px;padding:5px 12px;border-radius:99px;background:var(--accent);color:#fff;white-space:nowrap;font-weight:700}
+.tag.hot{background:var(--hot);animation:pulse 1.2s ease-in-out infinite}
+.bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin:14px 0 8px}
+.bar i{display:block;height:100%;width:0;border-radius:9px;transition:width 1.6s cubic-bezier(.2,.8,.2,1) .3s;
+background:linear-gradient(90deg,var(--accent2),var(--accent),var(--hot),var(--accent));background-size:200% 100%;animation:flow 3s linear infinite}
+.muted{color:var(--muted);font-size:14px}
+
+/* QTY */
+.qty{display:flex;align-items:center;justify-content:center;gap:22px;margin:14px 0}
+.qty button{width:56px;height:56px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:28px;cursor:pointer;transition:transform .15s,background .2s,box-shadow .2s}
+.qty button:hover:not(:disabled){background:var(--accent);color:#fff;box-shadow:0 0 22px var(--accent)}
+.qty button:active:not(:disabled){transform:scale(.88)}
+.qty button:disabled{opacity:.3;cursor:default}
+.qty span{font-size:48px;font-weight:800;min-width:60px;text-align:center}
+.pop{animation:pop .35s}
+.row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;animation:up .4s both}
+.total{border-top:1px dashed var(--line);margin-top:8px;padding-top:12px;font-size:24px;font-weight:800}
+
+.types{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.types .card{margin-top:0;text-align:center;padding:18px 8px}
+.types h3{margin:0;font-size:18px}.types h3 small{display:block;font-size:13px;color:var(--muted);font-weight:500}
+.types .pr{display:block;font-size:30px;font-weight:900;margin:10px 0 2px;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.types .qty{gap:8px;margin:10px 0 0}.types .qty button{width:42px;height:42px;font-size:22px}.types .qty span{font-size:34px;min-width:34px}
+.types .card.sel{border-color:var(--accent);box-shadow:0 0 26px -6px var(--accent)}
+/* FORM */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:14px;margin:12px 0 4px;color:var(--muted)}
+label em{color:var(--accent);font-style:normal}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:16px;transition:border-color .2s,box-shadow .2s}
+input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 4px #e6007e33}
+.shake{animation:shake .45s}
+.err{color:var(--hot);font-size:14px;min-height:20px;margin-top:8px}
+.pay{position:relative;overflow:hidden;width:100%;margin-top:14px;padding:18px;border:0;border-radius:16px;font-size:19px;font-weight:800;color:#fff;cursor:pointer;
+background:linear-gradient(120deg,var(--accent2),var(--accent),var(--hot));background-size:200% 100%;animation:flow 4s linear infinite,glow 2s ease-in-out infinite;transition:transform .15s}
+.pay:active{transform:scale(.97)}
+.pay::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,#ffffff88,transparent);transform:skewX(-20deg);animation:shine 2.8s infinite}
+.hidden{display:none}
+.ok{text-align:center}.ok h2{margin:6px 0 8px;font-size:28px}
+.big{font-size:60px;display:inline-block;animation:pop .7s}
+
+@keyframes flow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,24px) scale(1.15)}}
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes wave{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes marq{to{transform:translateX(-50%)}}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 #ff5a1f99}50%{transform:scale(1.07);box-shadow:0 0 0 10px #ff5a1f00}}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+@keyframes shine{to{left:130%}}
+@keyframes glow{0%,100%{box-shadow:0 8px 24px -6px var(--accent)}50%{box-shadow:0 8px 40px 0 var(--accent)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="wrap">
+  <div class="hero">
+    <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+    <div class="disco">🪩</div><br>
+    <span class="kicker">Закрытая вечеринка</span>
+    <h1 id="title"></h1>
+    <p id="date"></p>
+    <p id="place"></p>
+  </div>
+
+  <div class="ticker"><div id="tk"></div></div>
+
+  <div id="buy">
+    <div class="muted" style="text-align:center;margin-top:18px">Выберите билеты · Choose your tickets</div>
+    <div class="types">
+      <div class="card rv" id="cf"><h3>💃 Для девочек<small>For girls</small></h3><span class="pr" id="pf"></span>
+        <div class="qty"><button id="minusf" aria-label="−">−</button><span id="nf">0</span><button id="plusf" aria-label="+">+</button></div></div>
+      <div class="card rv" id="cm"><h3>🕺 Для мужчин<small>For men</small></h3><span class="pr" id="pm"></span>
+        <div class="qty"><button id="minusm" aria-label="−">−</button><span id="nm">0</span><button id="plusm" aria-label="+">+</button></div></div>
+    </div>
+    <div class="card rv">
+      <div id="lines"></div>
+      <div class="row total"><span>Итого · Total</span><span id="sum"></span></div>
+    </div>
+
+    <div class="card rv" id="formcard">
+      <div class="two">
+        <div><label for="name">Имя / Name <em>*</em></label><input id="name" autocomplete="given-name" placeholder="Имя"></div>
+        <div><label for="surname">Фамилия / Surname</label><input id="surname" autocomplete="family-name" placeholder="optional"></div>
+      </div>
+      <label for="tg">Telegram</label>
+      <input id="tg" placeholder="@username">
+      <label for="phone">Телефон / Phone</label>
+      <input id="phone" type="tel" autocomplete="tel" placeholder="+971 …">
+      <div class="muted" style="margin-top:8px">Нужен хотя бы один контакт — Telegram или телефон, чтобы мы внесли вас в список.</div>
+      <div class="err" id="err"></div>
+      <button class="pay" id="pay">Оплатить</button>
+    </div>
+  </div>
+
+  <div id="done" class="card ok hidden"></div>
+  <div id="soldout" class="card ok hidden"><div class="big">🔥</div><h2>Билеты закончились</h2><p class="muted">Все проходки раскуплены. Следите за анонсами!</p></div>
+</div>
+
+<script>
+// ====== НАСТРОЙКИ ======
+var CONFIG = {
+  title: "Название тусовки",
+  date: "Дата и время — уточните",
+  place: "Дубай · место — уточните",
+  girlsCents: 4139,   // $41.39 для девочек
+  menCents: 5433,     // $54.33 для мужчин
+  maxPerType: 10,
+  telegramUser: "",   // Telegram организатора без @ : гость отправит заказ вам в чат
+  checkoutEndpoint: ""  // адрес вашего сервера, который создаёт платёж в Lava; пусто = тестовый режим
+};
+// =======================
+var RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+var $ = function(id){return document.getElementById(id)};
+var T = {f:{c:CONFIG.girlsCents,q:0,l:"Для девочек / For girls"}, m:{c:CONFIG.menCents,q:0,l:"Для мужчин / For men"}};
+var shown = 0;
+function usd(c){ return "$"+(c/100).toFixed(2); }
+function tween(el,from,to,fmt,ms){
+  if (RM){ el.textContent=fmt(to); return; }
+  var t0=performance.now();
+  (function s(t){ var k=Math.min(1,(t-t0)/ms), e=1-Math.pow(1-k,3);
+    el.textContent=fmt(Math.round(from+(to-from)*e)); if(k<1) requestAnimationFrame(s); })(t0);
+}
+function bump(el){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+function total(){ return T.f.q*T.f.c + T.m.q*T.m.c; }
+
+function render(){
+  var h="";
+  ["f","m"].forEach(function(k){
+    var t=T[k];
+    $("n"+k).textContent=t.q; bump($("n"+k));
+    $("minus"+k).disabled=t.q<=0; $("plus"+k).disabled=t.q>=CONFIG.maxPerType;
+    $("c"+k).classList.toggle("sel",t.q>0);
+    if (t.q) h+='<div class="row"><span>'+t.q+' × '+t.l+'</span><span>'+usd(t.q*t.c)+'</span></div>';
+  });
+  $("lines").innerHTML=h;
+  var tot=total();
+  tween($("sum"),shown,tot,usd,450); shown=tot;
+  $("pay").textContent=tot? "Оплатить / Pay "+usd(tot) : "Выберите билеты / Choose tickets";
+}
+function init(){
+  document.title=CONFIG.title;
+  $("title").innerHTML=CONFIG.title.split("").map(function(ch,i){
+    return ch===" "?" ":'<span style="animation-delay:'+(i*0.07)+'s">'+ch+'</span>'}).join("");
+  $("date").textContent="📅 "+CONFIG.date;
+  $("place").textContent="📍 "+CONFIG.place;
+  var t="🎉 ДЛЯ ДЕВОЧЕК "+usd(CONFIG.girlsCents)+" ✦ FOR GIRLS ✦ ДЛЯ МУЖЧИН "+usd(CONFIG.menCents)+" ✦ FOR MEN ✦ ";
+  $("tk").textContent=t+t+t+t;
+  $("pf").textContent=usd(CONFIG.girlsCents);
+  $("pm").textContent=usd(CONFIG.menCents);
+  render();
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);} })},{threshold:.15});
+  document.querySelectorAll(".rv").forEach(function(el,i){ el.style.transitionDelay=(i*0.12)+"s"; io.observe(el); });
+}
+["f","m"].forEach(function(k){
+  $("minus"+k).onclick=function(){ if(T[k].q>0){T[k].q--; render();} };
+  $("plus"+k).onclick=function(){ if(T[k].q<CONFIG.maxPerType){T[k].q++; render();} };
+});
+
+function fail(msg,el){
+  $("err").textContent=msg;
+  var c=$("formcard"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake");
+  if (el) el.focus();
+}
+$("pay").onclick=function(){
+  var name=$("name").value.trim(), sur=$("surname").value.trim(), tg=$("tg").value.trim(), ph=$("phone").value.trim();
+  if (!total()) return fail("Выберите хотя бы один билет / Choose at least one ticket.");
+  if (!name) return fail("Введите имя / Enter your name.",$("name"));
+  if (!tg && !ph) return fail("Укажите Telegram или телефон / Add Telegram or phone.",$("tg"));
+  $("err").textContent="";
+  var tot=total();
+  if (CONFIG.telegramUser){
+    var msg="Здравствуйте! Хочу купить билеты / I want to buy tickets\n"+(T.f.q?"Девочки / Girls: "+T.f.q+"\n":"")+(T.m.q?"Мужчины / Men: "+T.m.q+"\n":"")+"Итого / Total: "+usd(tot)+"\nИмя / Name: "+(name+" "+sur).trim()+(tg?"\nTelegram: "+tg:"")+(ph?"\nТелефон / Phone: "+ph:"");
+    window.location.href="https://t.me/"+String(CONFIG.telegramUser).replace("@","")+"?text="+encodeURIComponent(msg);
+    return;
+  }
+  if (CONFIG.checkoutEndpoint){
+    $("pay").disabled=true; $("pay").textContent="…";
+    fetch(CONFIG.checkoutEndpoint,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({girls:T.f.q,men:T.m.q,name:(name+" "+sur).trim(),tg:tg,phone:ph})})
+    .then(function(r){return r.json()})
+    .then(function(d){ if(d&&d.url){location.href=d.url;} else throw new Error(JSON.stringify(d)); })
+    .catch(function(e){ $("pay").disabled=false; render(); fail("Не удалось создать платёж / Payment failed. ["+((e&&e.message)||e)+"]"); });
+    return;
+  }
+  $("buy").classList.add("hidden");
+  var d=$("done"); d.classList.remove("hidden");
+  d.innerHTML='<div class="big">🎉</div><h2></h2><p id="dp"></p><p class="muted">Тестовый режим: онлайн-оплата ещё не подключена.</p>';
+  d.querySelector("h2").textContent="Ты в списке / You’re in, "+name+"!";
+  $("dp").textContent="Девочек / Girls: "+T.f.q+" · Мужчин / Men: "+T.m.q+" · "+usd(tot);
+  window.scrollTo({top:0,behavior:"smooth"});
+  burst(innerWidth/2,innerHeight/3,140);
+};
+
+/* ===== ЧАСТИЦЫ / КОНФЕТТИ ===== */
+var cv=$("fx"), cx=cv.getContext("2d"), P=[], COL=["#ff3da6","#9b6bff","#ffd34d","#00e5ff","#ff7a45","#ffffff"];
+function size(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
+addEventListener("resize",size); size();
+function burst(x,y,n){ if(RM) return;
+  for(var i=0;i<n;i++){var a=Math.random()*Math.PI*2,s=4+Math.random()*9;
+    P.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-5,g:.28,r:4+Math.random()*5,c:COL[i%COL.length],life:110+Math.random()*60,rot:Math.random()*6,vr:(Math.random()-.5)*.4,sq:1});}
+}
+function spark(){ if(RM||document.hidden) return;
+  P.push({x:Math.random()*innerWidth,y:innerHeight+10,vx:(Math.random()-.5)*.6,vy:-(.6+Math.random()*1.2),g:0,r:1.5+Math.random()*2.5,c:COL[Math.random()*COL.length|0],life:300,rot:0,vr:0,sq:0,a:.7});
+}
+setInterval(spark,260);
+function loop(){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  for(var i=P.length-1;i>=0;i--){var p=P[i];
+    p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=p.sq?.99:1;p.rot+=p.vr;p.life--;
+    if(p.life<=0||p.y>innerHeight+30){P.splice(i,1);continue;}
+    cx.globalAlpha=Math.min(1,p.life/40)*(p.a||1);cx.fillStyle=p.c;
+    if(p.sq){cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillRect(-p.r,-p.r/2,p.r*2,p.r);cx.restore();}
+    else{cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.3);cx.fill();}
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+document.addEventListener("click",function(e){ if(e.target.closest(".qty button")) burst(e.clientX,e.clientY,10); });
+init();
+</script>
+</body>
+</html>
